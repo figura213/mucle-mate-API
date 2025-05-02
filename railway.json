@@ -1,0 +1,14 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "chmod +x ./mvnw && ./mvnw -DskipTests clean package"
+  },
+  "deploy": {
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10,
+    "startCommand": "java -jar target/*.jar",
+    "healthcheckPath": "/actuator/health",
+    "healthcheckTimeout": 300
+  }
+}
