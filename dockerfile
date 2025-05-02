@@ -1,18 +1,29 @@
-FROM eclipse-temurin:17-jdk as build
-WORKDIR /workspace/app
+# Этап сборки
+FROM eclipse-temurin:21-jdk AS build
 
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-COPY src src
+WORKDIR /app
 
-RUN ./mvnw install -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+# Кэшируем зависимости Maven
+RUN mkdir -p /app/.m2
+ENV MAVEN_CONFIG=/app/.m2
 
-FROM eclipse-temurin:17-jre
-VOLUME /tmp
-ARG DEPENDENCY=/workspace/app/target/dependency
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.rangers.demo.DemoApplication"]
+# Копируем все файлы проекта
+COPY . .
+
+# Устанавливаем права и собираем проект (без тестов)
+RUN chmod +x ./mvnw && \
+    ./mvnw -B -DskipTests clean install
+
+# Этап рантайма (минимальный образ)
+FROM eclipse-temurin:21-jre AS runtime
+
+WORKDIR /app
+
+# Копируем скомпилированный jar из предыдущего этапа
+COPY --from=build /app/target/*.jar app.jar
+
+# Открываем порт (например, 8080)
+EXPOSE 8080
+
+# Запускаем приложение
+ENTRYPOINT ["java", "-jar", "app.jar"]
