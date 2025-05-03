@@ -1,11 +1,21 @@
-# Вибір образу з OpenJDK
+# Этап сборки
 FROM openjdk:21-jdk-slim as builder
 
-# Копіюємо JAR файл в контейнер
+WORKDIR /app
+
+# Копируем JAR файл из target
 COPY target/demo-0.0.1-SNAPSHOT.jar /app/demo.jar
 
-# Вказуємо команду для запуску додатку
-ENTRYPOINT ["java", "-jar", "/app/demo.jar"]
+# Финальный образ
+FROM openjdk:21-jdk-slim
 
-# Оголошуємо порт для доступу до програми
+WORKDIR /app
+
+# Копируем JAR файл из предыдущего этапа
+COPY --from=builder /app/demo.jar /app/demo.jar
+
+# Открываем порт 8080 для доступа
 EXPOSE 8080
+
+# Команда для запуска приложения
+ENTRYPOINT ["java", "-jar", "/app/demo.jar"]
