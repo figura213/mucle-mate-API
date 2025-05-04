@@ -16,15 +16,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class AuthController {
     private final UserService userService;
-   // @CrossOrigin(origins = "http://localhost:3000")
-   @PostMapping("/sign-up")
-   public ResponseEntity<Map<String, Object>> createUser(@RequestBody UserDto userDto) {
-       Map<String, Object> result = userService.addUser(userDto);
-       return ResponseEntity.ok(result);
-   }
+
+    @PostMapping("/sign-up")
+    public ResponseEntity<Map<String, Object>> createUser(@RequestBody UserDto userDto) {
+        Map<String, Object> result = userService.addUser(userDto);
+        return ResponseEntity.ok(result);
+    }
+
     @PostMapping("/sign-in")
     public ResponseEntity<Map<String, Object>> signIn(@RequestBody UserCredentialsDto userCredentialsDto) {
         try {
@@ -36,7 +37,6 @@ public class AuthController {
                     .body(Map.of("error", "Invalid credentials"));
         }
     }
-
 
     @PostMapping("/refresh")
     public JwtAuthenticationDto refresh(@RequestBody RefreshTokenDto refreshTokenDto) throws Exception {
