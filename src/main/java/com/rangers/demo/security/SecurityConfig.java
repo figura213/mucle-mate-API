@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -53,7 +54,16 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "https://localhost:3000"));
+
+        // Важно: НЕ используем setAllowedOrigins с "*"
+        // вместо этого используем явный список доменов или allowedOriginPatterns
+
+        // Вариант 1: явный список доменов
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:3000"));
+
+        // Вариант 2: используем паттерны (раскомментируйте строку ниже и закомментируйте строку выше)
+        // config.setAllowedOriginPatterns(List.of("http://localhost:*", "https://localhost:*"));
+
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control", "Accept"));
         config.setExposedHeaders(Arrays.asList("Authorization"));
