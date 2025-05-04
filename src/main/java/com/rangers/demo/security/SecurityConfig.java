@@ -30,7 +30,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
@@ -51,27 +51,27 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(4);
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-
-        // Важно: НЕ используем setAllowedOrigins с "*"
-        // вместо этого используем явный список доменов или allowedOriginPatterns
-
-        // Вариант 1: явный список доменов
-        config.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:3000"));
-
-        // Вариант 2: используем паттерны (раскомментируйте строку ниже и закомментируйте строку выше)
-        // config.setAllowedOriginPatterns(List.of("http://localhost:*", "https://localhost:*"));
-
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control", "Accept"));
-        config.setExposedHeaders(Arrays.asList("Authorization"));
-        config.setAllowCredentials(true);
-        config.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration config = new CorsConfiguration();
+//
+//        // Важно: НЕ используем setAllowedOrigins с "*"
+//        // вместо этого используем явный список доменов или allowedOriginPatterns
+//
+//        // Вариант 1: явный список доменов
+//        config.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:3000"));
+//
+//        // Вариант 2: используем паттерны (раскомментируйте строку ниже и закомментируйте строку выше)
+//        // config.setAllowedOriginPatterns(List.of("http://localhost:*", "https://localhost:*"));
+//
+//        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+//        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control", "Accept"));
+//        config.setExposedHeaders(Arrays.asList("Authorization"));
+//        config.setAllowCredentials(true);
+//        config.setMaxAge(3600L);
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", config);
+//        return source;
+//    }
 }
