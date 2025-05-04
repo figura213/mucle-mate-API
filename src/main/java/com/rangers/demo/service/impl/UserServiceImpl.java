@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.naming.AuthenticationException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -64,11 +65,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String addUser(UserDto userDto) {
+    public Map<String, Object> addUser(UserDto userDto) {
         User user = userMapper.toEntity(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return "User added";
+        User savedUser = userRepository.save(user);
+        return Map.of(
+                "message", "User added successfully",
+                "userId", savedUser.getUserId().toString()
+        );
     }
 
     @Override
@@ -102,11 +106,6 @@ public class UserServiceImpl implements UserService {
         Workout saved = workoutRepository.save(workout);
         return workoutMapper.toDto(saved);
     }
-
-//    @Override
-//    public UserDto updateUser(String id, UserDto userDto) throws ChangeSetPersister.NotFoundException {
-//        return null;
-//    }
 
     private User findByCredentials(UserCredentialsDto userCredentialsDto) throws AuthenticationException {
         Optional<User> optionalUser = userRepository.findByEmail(userCredentialsDto.getEmail());

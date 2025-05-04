@@ -20,11 +20,11 @@ import java.util.Map;
 public class AuthController {
     private final UserService userService;
    // @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/sign-up")
-    public Map<String, String> createUser(@RequestBody UserDto userDto) {
-        String result = userService.addUser(userDto);
-        return Map.of("message", result);
-    }
+   @PostMapping("/sign-up")
+   public ResponseEntity<Map<String, Object>> createUser(@RequestBody UserDto userDto) {
+       Map<String, Object> result = userService.addUser(userDto);
+       return ResponseEntity.ok(result);
+   }
     @PostMapping("/sign-in")
     public ResponseEntity<Map<String, Object>> signIn(@RequestBody UserCredentialsDto userCredentialsDto) {
         try {
