@@ -19,7 +19,7 @@ public class ExerciseDto {
     /**
      * Уникальный идентификатор упражнения
      */
-    private UUID id;
+    private Long id;
 
     /**
      * URL или путь к изображению упражнения
@@ -59,7 +59,7 @@ public class ExerciseDto {
     /**
      * Список целевых групп мышц (массив строк, например, ["back", "biceps"])
      */
-    private String[] target;
+    private List<String> targetMuscleGroups;
 
     /**
      * Дата добавления упражнения в формате ISO-строки (например, "2025-05-01")

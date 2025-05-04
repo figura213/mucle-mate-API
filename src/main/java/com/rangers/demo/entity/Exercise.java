@@ -18,8 +18,7 @@ import java.util.UUID;
 @Builder
 public class Exercise {
     @Id
-    @GeneratedValue
-    private UUID id;
+    private Long id;
 
     private String imageSrc;
     private String title;
@@ -29,6 +28,9 @@ public class Exercise {
     private String type;
     private String difficulty;
 
+    @ElementCollection
+    @CollectionTable(name = "exercise_targets", joinColumns = @JoinColumn(name = "exercise_id"))
+    private List<String> targetMuscleGroups;
 //    @ElementCollection
 //    @CollectionTable(name = "exercise_targets", joinColumns = @JoinColumn(name = "exercise_id"))
 //    @Column(name = "target")

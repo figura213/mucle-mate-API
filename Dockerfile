@@ -17,5 +17,5 @@ COPY --from=builder /app/demo.jar /app/demo.jar
 # Открываем порт 8080 для доступа
 EXPOSE 8080
 
-# Команда для запуска приложения
+# Команда для запуска приложенияв
 ENTRYPOINT ["java", "-jar", "/app/demo.jar"]

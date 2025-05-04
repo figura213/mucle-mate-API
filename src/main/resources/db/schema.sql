@@ -33,14 +33,16 @@ CREATE TABLE IF NOT EXISTS workout_exercises (
 
 -- Exercises table
 CREATE TABLE IF NOT EXISTS exercises (
-    id UUID PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
     image_src VARCHAR(255),
     title VARCHAR(255),
     description VARCHAR(1000),
+    duration VARCHAR(50),
     type VARCHAR(100),
     difficulty VARCHAR(50),
     date_added VARCHAR(50)
 );
+
 
 -- Exercise Targets (many-to-many relationship)
 --CREATE TABLE IF NOT EXISTS exercise_targets (

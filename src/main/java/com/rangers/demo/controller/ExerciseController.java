@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -48,7 +49,31 @@ public class ExerciseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ExerciseDto> getExercise(@PathVariable UUID id) {
+    public ResponseEntity<ExerciseDto> getExercise(@PathVariable Long id) {
         return ResponseEntity.ok(exerciseService.getById(id));
+    }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<Void> uploadBulk(
+            @RequestBody List<ExerciseDto> items
+    ) {
+        for (ExerciseDto it : items) {
+            // в DTO могут прийти и другие поля, но мы заполним только нужные
+            ExerciseDto dto = ExerciseDto.builder()
+                    .id(it.getId())  // ← ОБЯЗАТЕЛЬНО
+                    .imageSrc(it.getImageSrc())
+                    .title(it.getTitle())
+                    .description(it.getDescription())
+                    .guide(it.getGuide())
+                    .duration(it.getDuration())
+                    .type(it.getType())
+                    .difficulty(it.getDifficulty())
+                    .targetMuscleGroups(it.getTargetMuscleGroups())
+                    .dateAdded(it.getDateAdded())
+                    .build();
+
+            exerciseService.create(dto);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
