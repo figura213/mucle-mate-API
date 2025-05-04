@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.naming.AuthenticationException;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -22,20 +23,22 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/sign-up")
-    public String createUser(@RequestBody UserDto userDto) {
-        return userService.addUser(userDto);
+    public Map<String, String> createUser(@RequestBody UserDto userDto) {
+        String result = userService.addUser(userDto);
+        return Map.of("message", result);
     }
-
-
     @PostMapping("/sign-in")
-    public ResponseEntity<JwtAuthenticationDto> singIn(@RequestBody UserCredentialsDto userCredentialsDto) {
+    public ResponseEntity<Map<String, Object>> signIn(@RequestBody UserCredentialsDto userCredentialsDto) {
         try {
             JwtAuthenticationDto jwtAuthenticationDto = userService.singIn(userCredentialsDto);
-            return ResponseEntity.ok(jwtAuthenticationDto);
+            return ResponseEntity.ok(Map.of("token", jwtAuthenticationDto));
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Invalid credentials"));
         }
     }
+
 
     @PostMapping("/refresh")
     public JwtAuthenticationDto refresh(@RequestBody RefreshTokenDto refreshTokenDto) throws Exception {

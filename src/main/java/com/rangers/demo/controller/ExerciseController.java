@@ -27,7 +27,7 @@ public class ExerciseController {
     // конструктор
 
     @GetMapping
-    public ResponseEntity<Page<ExerciseDto>> listExercises(
+    public ResponseEntity<Map<String, Object>> listExercises(
             @RequestParam Optional<String> type,
             @RequestParam Optional<String> q,
             @RequestParam Optional<String> difficulty,
@@ -38,21 +38,23 @@ public class ExerciseController {
             @RequestParam(defaultValue="10") int limit
     ) {
         Pageable pg = PageRequest.of(page, limit);
-        Map<String,String> filters = new HashMap<>();type.ifPresent(v -> filters.put("type", v));
+        Map<String,String> filters = new HashMap<>();
+        type.ifPresent(v -> filters.put("type", v));
         q.ifPresent(v -> filters.put("q", v));
         id.ifPresent(v -> filters.put("id", v));
         difficulty.ifPresent(v -> filters.put("difficulty", v));
         duration.ifPresent(v -> filters.put("duration", v));
         target.ifPresent(v -> filters.put("target", v));
+
         Page<ExerciseDto> result = exerciseService.list(pg, filters);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(Map.of("data", result));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ExerciseDto> getExercise(@PathVariable Long id) {
-        return ResponseEntity.ok(exerciseService.getById(id));
+    public ResponseEntity<Map<String, Object>> getExercise(@PathVariable Long id) {
+        ExerciseDto dto = exerciseService.getById(id);
+        return ResponseEntity.ok(Map.of("data", dto));
     }
-
     @PostMapping("/bulk")
     public ResponseEntity<Void> uploadBulk(
             @RequestBody List<ExerciseDto> items

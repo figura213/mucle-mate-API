@@ -7,6 +7,8 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/personalization/2")
@@ -16,15 +18,15 @@ public class Personalization2Controller {
     private final UserService userService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDto.Metrics> getPersonalization2(@PathVariable String userId)
+    public ResponseEntity<Map<String, Object>> getPersonalization2(@PathVariable String userId)
             throws ChangeSetPersister.NotFoundException {
         UserDto user = userService.getUserById(userId);
-        return ResponseEntity.ok(user.getMetrics());
+        return ResponseEntity.ok(Map.of("data", user.getMetrics()));
     }
 
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDto.Metrics> updatePersonalization2(
+    public ResponseEntity<Map<String, Object>> updatePersonalization2(
             @PathVariable String userId,
             @RequestBody UserDto.Metrics metrics)
             throws ChangeSetPersister.NotFoundException {
@@ -35,6 +37,6 @@ public class Personalization2Controller {
         user.setMetrics(metrics);
 
         UserDto updatedUser = userService.updateUser(userId, user);
-        return ResponseEntity.ok(updatedUser.getMetrics());
+        return ResponseEntity.ok(Map.of("data", updatedUser.getMetrics()));
     }
 }
