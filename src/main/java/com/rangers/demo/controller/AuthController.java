@@ -16,7 +16,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
-//@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
+@CrossOrigin(
+        origins = "http://localhost:3000", // Конкретный домен вместо "*"
+        allowedHeaders = {"Authorization", "Content-Type", "Cache-Control", "Accept"},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.PATCH},
+        exposedHeaders = "Authorization",
+        allowCredentials = "true"
+)
 public class AuthController {
     private final UserService userService;
 
