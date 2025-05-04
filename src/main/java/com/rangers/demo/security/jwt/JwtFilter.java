@@ -27,7 +27,12 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
+        String path = request.getServletPath();
         String token = getTokenFromRequest(request);
+        if (path.startsWith("/auth") || path.equals("/user/registration")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (token != null && jwtService.validateJwtToken(token)) {
             setCustomUserDetailsToSecurityContextHolder(token);
         }
