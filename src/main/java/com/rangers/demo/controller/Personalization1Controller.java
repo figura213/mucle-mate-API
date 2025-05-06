@@ -13,6 +13,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/personalization/1")
 @RequiredArgsConstructor
+@CrossOrigin
 public class Personalization1Controller {
 
     private final UserService userService;

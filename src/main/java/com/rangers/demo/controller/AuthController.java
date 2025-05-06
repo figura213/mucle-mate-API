@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.AuthenticationException;
+import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -23,9 +24,27 @@ public class AuthController {
     @PostMapping("/sign-up")
     public ResponseEntity<Map<String, Object>> createUser(@RequestBody UserDto userDto) {
         Map<String, Object> result = userService.addUser(userDto);
-        return ResponseEntity.ok(result);
-    }
 
+        // After user creation, generate authentication token
+        try {
+            UserCredentialsDto credentials = new UserCredentialsDto(
+                    userDto.getEmail(),
+                    userDto.getPassword()
+            );
+
+            JwtAuthenticationDto jwtAuthenticationDto = userService.singIn(credentials);
+
+            // Create response with both user ID and token
+            Map<String, Object> response = new HashMap<>();
+            response.put("userId", result.get("userId"));
+            response.put("token", jwtAuthenticationDto);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (AuthenticationException e) {
+            // In case token generation fails, still return the user ID
+            return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        }
+    }
     @PostMapping("/sign-in")
     public ResponseEntity<Map<String, Object>> signIn(@RequestBody UserCredentialsDto userCredentialsDto) {
         try {

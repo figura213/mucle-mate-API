@@ -18,6 +18,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/exercises")
+@CrossOrigin
 public class ExerciseController {
     private final ExerciseService exerciseService;
 
