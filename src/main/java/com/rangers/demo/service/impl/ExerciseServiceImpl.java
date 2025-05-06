@@ -110,8 +110,25 @@ public class ExerciseServiceImpl implements ExerciseService {
     // Additional utility methods
 
     private ExerciseDto toDto(Exercise exercise) {
+        if (exercise == null) {
+            return null; // Если сущность null, возвращаем null
+        }
         ExerciseDto dto = new ExerciseDto();
         BeanUtils.copyProperties(exercise, dto);
         return dto;
+    }
+
+    @Override
+    public Page<ExerciseDto> listAll(Pageable pageable) {
+        // Получаем все упражнения с пагинацией
+        Page<Exercise> exercisesPage = repository.findAll(pageable);
+
+        // Проверяем, что страница не пустая
+        if (exercisesPage == null || exercisesPage.getContent().isEmpty()) {
+            return Page.empty(); // Возвращаем пустую страницу, если упражнений нет
+        }
+
+        // Преобразуем сущности в DTO
+        return exercisesPage.map(this::toDto);
     }
 }

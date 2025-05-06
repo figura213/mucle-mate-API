@@ -36,11 +36,11 @@ public class ExerciseController {
             @RequestParam Optional<String> duration,
             @RequestParam Optional<String> id,
             @RequestParam Optional<String> target,
-            @RequestParam(defaultValue="0") int page,
-            @RequestParam(defaultValue="10") int limit
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
     ) {
-        Pageable pg = PageRequest.of(page, limit);
-        Map<String,String> filters = new HashMap<>();
+        Pageable pageable = PageRequest.of(page, limit);
+        Map<String, String> filters = new HashMap<>();
         type.ifPresent(v -> filters.put("type", v));
         q.ifPresent(v -> filters.put("q", v));
         id.ifPresent(v -> filters.put("id", v));
@@ -48,10 +48,16 @@ public class ExerciseController {
         duration.ifPresent(v -> filters.put("duration", v));
         target.ifPresent(v -> filters.put("target", v));
 
-        Page<ExerciseDto> result = exerciseService.list(pg, filters);
+        // Если фильтры не переданы, возвращаем все упражнения
+        if (filters.isEmpty()) {
+            Page<ExerciseDto> result = exerciseService.listAll(pageable); // метод для получения всех упражнений
+            return ResponseEntity.ok(Map.of("data", result));
+        }
+
+        // Если фильтры есть, применяем их
+        Page<ExerciseDto> result = exerciseService.list(pageable, filters);
         return ResponseEntity.ok(Map.of("data", result));
     }
-
     @GetMapping("/{id}")
     @Transactional
     public ResponseEntity<Map<String, Object>> getExercise(@PathVariable Long id) {

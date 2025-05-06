@@ -11,5 +11,5 @@ public interface ExerciseService {
     ExerciseDto getById(Long id);
 
     ExerciseDto create(ExerciseDto exerciseDto);
-
+    Page<ExerciseDto> listAll(Pageable pageable);
 }
