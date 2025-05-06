@@ -40,8 +40,10 @@ CREATE TABLE IF NOT EXISTS exercises (
     duration VARCHAR(50),
     type VARCHAR(100),
     difficulty VARCHAR(50),
-    date_added VARCHAR(50)
+    date_added VARCHAR(50),
+    target_muscle_groups VARCHAR(1000) -- строка для хранения списка целевых мышечных групп
 );
+
 
 
 -- Exercise Targets (many-to-many relationship)

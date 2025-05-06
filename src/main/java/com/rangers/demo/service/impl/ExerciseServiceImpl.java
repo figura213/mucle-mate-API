@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import com.rangers.demo.repository.ExerciseRepository;
 
@@ -23,46 +24,94 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public Page<ExerciseDto> list(Pageable pageable, Map<String, String> filters) {
-        // реалізація
-        return Page.empty(); // тимчасово
+        Specification<Exercise> spec = createSpecification(filters);
+        Page<Exercise> exercisePage = repository.findAll(spec, pageable);
+        return exercisePage.map(this::toDto);
+    }
+
+    private Specification<Exercise> createSpecification(Map<String, String> filters) {
+        Specification<Exercise> spec = Specification.where(null);
+
+        if (filters.containsKey("type") && !filters.get("type").isEmpty()) {
+            String type = filters.get("type");
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("type"), type));
+        }
+
+        if (filters.containsKey("q") && !filters.get("q").isEmpty()) {
+            String searchTerm = "%" + filters.get("q") + "%";
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(root.get("title"), searchTerm));
+        }
+
+        if (filters.containsKey("id") && !filters.get("id").isEmpty()) {
+            try {
+                Long id = Long.parseLong(filters.get("id"));
+                spec = spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get("id"), id));
+            } catch (NumberFormatException e) {
+                // If ID is not a number, try string comparison (UUID or other format)
+                String id = filters.get("id");
+                spec = spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get("id").as(String.class), id));
+            }
+        }
+
+        if (filters.containsKey("difficulty") && !filters.get("difficulty").isEmpty()) {
+            String difficulty = filters.get("difficulty");
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("difficulty"), difficulty));
+        }
+
+        if (filters.containsKey("duration") && !filters.get("duration").isEmpty()) {
+            String duration = filters.get("duration");
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("duration"), duration));
+        }
+
+        if (filters.containsKey("target") && !filters.get("target").isEmpty()) {
+            String target = filters.get("target");
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("targetMuscleGroup"), target));
+        }
+
+        return spec;
     }
 
     @Override
     public ExerciseDto getById(Long id) {
-        // реалізація
-        return null;
+        Exercise exercise = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Exercise not found with id: " + id));
+        return toDto(exercise);
     }
 
     @Override
     @Transactional
-    public ExerciseDto create(ExerciseDto dto) {
-        Exercise ex = new Exercise();
-        // Копируем совпадающие поля из dto → entity
-        BeanUtils.copyProperties(dto, ex);
-        if (ex.getId() == null) {
+    public ExerciseDto create(ExerciseDto exerciseDto) {
+        Exercise exercise = new Exercise();
+        // Copy matching properties from dto to entity
+        BeanUtils.copyProperties(exerciseDto, exercise);
+
+        if (exercise.getId() == null) {
             throw new IllegalArgumentException("ID must be provided manually.");
         }
-        // Если в DTO не передали dateAdded, ставим сегодня
-        if (dto.getDateAdded() == null || dto.getDateAdded().isBlank()) {
-            ex.setDateAdded(LocalDate.now().toString());
+
+        // Set today's date if dateAdded is not provided
+        if (exerciseDto.getDateAdded() == null || exerciseDto.getDateAdded().isBlank()) {
+            exercise.setDateAdded(LocalDate.now().toString());
         }
 
-        Exercise saved = repository.save(ex);
+        Exercise saved = repository.save(exercise);
 
-        // Возвращаем обратно DTO (скопируем из сущности)
-        ExerciseDto out = new ExerciseDto();
-        BeanUtils.copyProperties(saved, out);
-        return out;
+        // Convert back to DTO
+        return toDto(saved);
     }
 
-    private ExerciseDto toDto(Exercise ex) {
-        return ExerciseDto.builder()
-                .id(ex.getId())
-                .imageSrc(ex.getImageSrc())
-                .title(ex.getTitle())
-                .description(ex.getDescription())
-                .type(ex.getType())
-                .difficulty(ex.getDifficulty())
-                .build();
+    // Additional utility methods
+
+    private ExerciseDto toDto(Exercise exercise) {
+        ExerciseDto dto = new ExerciseDto();
+        BeanUtils.copyProperties(exercise, dto);
+        return dto;
     }
 }

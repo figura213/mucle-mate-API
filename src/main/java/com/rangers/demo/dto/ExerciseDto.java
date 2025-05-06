@@ -59,7 +59,7 @@ public class ExerciseDto {
     /**
      * Список целевых групп мышц (массив строк, например, ["back", "biceps"])
      */
-    private List<String> targetMuscleGroups;
+    private String targetMuscleGroups;
 
     /**
      * Дата добавления упражнения в формате ISO-строки (например, "2025-05-01")

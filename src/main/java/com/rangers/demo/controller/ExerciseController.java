@@ -3,6 +3,7 @@ package com.rangers.demo.controller;
 
 import com.rangers.demo.dto.ExerciseDto;
 import com.rangers.demo.service.ExerciseService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,6 +53,7 @@ public class ExerciseController {
     }
 
     @GetMapping("/{id}")
+    @Transactional
     public ResponseEntity<Map<String, Object>> getExercise(@PathVariable Long id) {
         ExerciseDto dto = exerciseService.getById(id);
         return ResponseEntity.ok(Map.of("data", dto));
