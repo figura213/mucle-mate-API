@@ -37,7 +37,7 @@ public class AuthController {
             // Create response with both user ID and token
             Map<String, Object> response = new HashMap<>();
             response.put("userId", result.get("userId"));
-            response.put("token", jwtAuthenticationDto);
+            response.put("auth", jwtAuthenticationDto);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (AuthenticationException e) {
@@ -49,7 +49,16 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> signIn(@RequestBody UserCredentialsDto userCredentialsDto) {
         try {
             JwtAuthenticationDto jwtAuthenticationDto = userService.singIn(userCredentialsDto);
-            return ResponseEntity.ok(Map.of("token", jwtAuthenticationDto));
+
+            // Get user ID based on the email
+            String userId = userService.getUserIdByEmail(userCredentialsDto.getEmail());
+
+            // Create response with both user ID and token
+            Map<String, Object> response = new HashMap<>();
+            response.put("userId", userId);
+            response.put("auth", jwtAuthenticationDto);
+
+            return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)

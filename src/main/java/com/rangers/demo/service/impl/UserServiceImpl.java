@@ -65,6 +65,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String getUserIdByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(user -> user.getUserId().toString())
+                .orElse(null); // Return null instead of throwing exception
+    }
+    @Override
     public Map<String, Object> addUser(UserDto userDto) {
         User user = userMapper.toEntity(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));

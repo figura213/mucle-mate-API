@@ -21,4 +21,5 @@ public interface UserService {
     WorkoutDto addWorkout(UUID userId, WorkoutDto workoutDto);
     UserDto updateUser(String id, UserDto userDto) throws ChangeSetPersister.NotFoundException;
 
+    String getUserIdByEmail(String email);
 }
